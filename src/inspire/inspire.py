@@ -20,8 +20,6 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
-from absl import flags, logging, app
-
 PUB_OUTPUT = {'cv-latex': 'lcv',
               'cv-html': 'cv',
               'cv-text': 'tcv',
@@ -68,7 +66,7 @@ class Inspire:
                    + '&of=' + self.out_format + PUB_OUTPUT[output]
                    + '&em=B'
                    + options)
-        result = self._request(request)
+        result = BeautifulSoup(self._request(request).text, 'lxml')
         return result.text
 
     def get_citation(self, name, output='bibtex'):
@@ -85,6 +83,13 @@ class Inspire:
         result = BeautifulSoup(self._request(request).text, 'lxml')
         return result.text
 
+    def generate_bib(self, format='bibtex'):
+        result = []
+        for citation in self.citations:
+            result.append(self.get_citation(citation, format))
+
+        return ''.join(result)
+
     def parse_latex(self, filename, path='', format='bibtex'):
         """ Parse a latex file for the bibliography entries in inspire format.
 
@@ -98,15 +103,13 @@ class Inspire:
         """
         with open(os.path.join(path, filename), 'r') as latex:
             for line in latex:
-                self._find_cite(line)
+                self.find_cite(line)
 
-    def _find_cite(self, string):
+    def find_cite(self, string):
         regex = r"\\cite[a-zA-Z]*{([^}]+)}"
         matches = re.finditer(regex, string)
         for match in matches:
-            print(match.group(1))
             citations = match.group(1).split(',')
-            print(citations)
             for citation in citations:
                 if citation not in self.citations:
                     self.citations.append(citation.strip())
@@ -130,11 +133,12 @@ class Inspire:
 
 if __name__ == '__main__':
     inspire = Inspire('html')
-    print(inspire.publication_list('Joshua Isaacson', output='bibtex'))
-    print(inspire.search('f a Joshua Isaacson', output='bibtex'))
-    print(inspire.get_citation('Su:2014wpa'))
+    # print(inspire.publication_list('Joshua Isaacson', output='bibtex'))
+    # print(inspire.search('f a Joshua Isaacson', output='bibtex'))
+    # print(inspire.get_citation('Su:2014wpa'))
 
-    test_str = ("\\somecommand{test} blabla nonsense lorem ipsum \\cite{key1} "
-                "and \\cite{key2, key3, key4} and \\citep{key5} \\cite{key4}")
+    test_str = ("\\somecommand{test} blabla nonsense lorem ipsum \\cite{Su:2014wpa} "
+            "and \\cite{Isaacson:2015fra, Sun:2016kkh, Su:2014wpa} and \\citep{Ababekri:2016kkj} \\cite{Agarwal:2016gxe}")
 
-    inspire._find_cite(test_str)
+    inspire.find_cite(test_str)
+    print(inspire.generate_bib())
