@@ -40,6 +40,7 @@ setup(
     ],
     python_requires='>=3.5',
     install_requires=[
-        'bs4', 'absl-py',
+        'bs4',
+        'requests',
     ],
 )
