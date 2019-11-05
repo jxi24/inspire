@@ -106,13 +106,14 @@ class Inspire:
                 self.find_cite(line)
 
     def find_cite(self, string):
-        regex = r"\\cite[a-zA-Z]*{([^}]+)}"
+        regex = r"\\cite[a-zA-Z\*]*{([^}]+)}"
         matches = re.finditer(regex, string)
         for match in matches:
             citations = match.group(1).split(',')
             for citation in citations:
+                citation = citation.strip()
                 if citation not in self.citations:
-                    self.citations.append(citation.strip())
+                    self.citations.append(citation)
 
     @staticmethod
     def _parse_options(**kwargs):
