@@ -41,6 +41,7 @@ setup(
     python_requires='>=3.5',
     install_requires=[
         'bs4',
+        'lxml',
         'requests',
     ],
     extras_require={
