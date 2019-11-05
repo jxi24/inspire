@@ -43,4 +43,7 @@ setup(
         'bs4',
         'requests',
     ],
+    extras_require={
+        'test': ['pytest', 'coverage', 'pytest-cov'],
+    },
 )
