@@ -130,16 +130,3 @@ class Inspire:
 
     def _request(self, request):
         return requests.get(request)
-
-
-if __name__ == '__main__':
-    inspire = Inspire('html')
-    # print(inspire.publication_list('Joshua Isaacson', output='bibtex'))
-    # print(inspire.search('f a Joshua Isaacson', output='bibtex'))
-    # print(inspire.get_citation('Su:2014wpa'))
-
-    test_str = ("\\somecommand{test} blabla nonsense lorem ipsum \\cite{Su:2014wpa} "
-            "and \\cite{Isaacson:2015fra, Sun:2016kkh, Su:2014wpa} and \\citep{Ababekri:2016kkj} \\cite{Agarwal:2016gxe}")
-
-    inspire.find_cite(test_str)
-    print(inspire.generate_bib())
